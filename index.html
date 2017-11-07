@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>超级玛丽奥-canvas行走</title>
+</head>
+<body>
+  <canvas id="demo" width="800" height="400" 
+  style="border: 1px solid blue;
+  margin:50px auto;
+  display:block;">
+  <!-- html5有兼容性现代浏览器都没有问题
+  IE9以下不支持 -->
+  您的浏览器不支持canvas
+</canvas>
+<script>
+  // window王
+  // 页面加载完成 JS事件机制 html css js 下载完成了，
+  // 页面可以开始写交互了
+  window.onload = function() {
+    // 查询选择器
+    let canvas = document.querySelector('#demo');
+    let context = canvas.getContext('2d');
+    var mario = new Image();
+    // web http协议
+    // .src js宿主是浏览器 新开一个线程去下载图片（远程,相对本地）
+    // 文件写入的过程 完成时， 会触发预先定义好的onload 事件
+    // 优化网页， 减少http 请求数  
+    // 403 forbidden  状态码的意义 
+    // 肉鸡攻击
+    mario.src = './images/m.png'
+    mario.onload = function() {
+      // 加载mario 
+      //绘制
+      drawMario();
+    }
+    // 监听键盘事件 dom 的根 body
+    // 回调函数  callback
+    document.addEventListener('keydown', function(e) {
+      var direction = getDirection(e);
+      player.stop = false;
+      playAction(direction);
+    })
+
+    document.addEventListener('keyup', function(e) {
+      var direction = getDirection(e);
+      player.stop = true;
+      playAction(direction);
+
+
+    })
+
+
+    function playAction(direction) {
+        
+        playerMove(direction);
+      }
+    
+
+    function playerMove(direction) {
+      // canvas 边擦除， 边画新的 
+      context.clearRect(0, 0,
+       canvas.width, canvas.height);
+
+       if(player.stop) {
+           player.imageX = 0;
+       } else{ 
+           player.imageX += 50;
+       }
+      
+      if(player.imageX >= 150) {
+          player.imageX = 0;
+      }
+      if (direction === 'right') {
+        player.x += 5;
+        player.imageY = 0;
+      } else if (direction === 'left') {
+        //向后走
+        player.x -= 5;
+        player.imageY = 60;
+      } 
+      drawMario();
+    }
+
+    // 获取方向键的方向
+    function getDirection(e) {
+      var direction;
+      var keyCode = e.keyCode;
+      switch(keyCode) {
+        case 37:
+          direction = 'left';
+          break;
+        case 38: 
+          direction = 'up';
+          break;
+        case 39:
+          direction = 'right';
+          break;
+        case 40:
+          direction = 'down';
+          break;
+      }
+
+      return direction;
+    }
+
+    // 游戏中的配置项 JSON 是最廉价的数据结构
+    // 复杂数据容器
+    var player = {
+      width: 50,
+      height: 60,
+      x: 50,
+      y: 0,
+      imageX: 0,
+      imageY: 0,
+      stop: true
+    }
+
+    /*
+     * 作者： hellocassiell
+     * 时间： 17-11-6
+     * 功能：绘制Mario
+     */
+    function drawMario() {
+      // 绘制名柄
+      context.drawImage(mario, player.imageX,player.imageY,
+      player.width,player.height,player.x,
+      canvas.height-player.height,player.width,
+       player.height);
+    }
+  }
+</script>
+</body>
+</html>
